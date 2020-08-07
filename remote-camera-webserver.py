@@ -1,4 +1,5 @@
 VID_DIR="data/remote-camera-webserver/"
+CAMERA_OPTIONS={"sensor_mode": 4, "resolution": (640,480), "framerate":30}
 
 import base64
 import json
@@ -77,6 +78,6 @@ def main(cam):
 beep()
 print('init hw')
 # with picamera.PiCamera(sensor_mode=4, resolution=(640,480), framerate=15) as camera, \
-with PiCamera(sensor_mode=4, resolution=(640,480), framerate=15) as cam:
+with PiCamera(**CAMERA_OPTIONS) as cam:
     main(cam)
 
