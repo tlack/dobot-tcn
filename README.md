@@ -59,23 +59,23 @@ Here is how it works:
 
 * For N_EXAMPLES as N..
 
-** Record current robot position including joints - this is called a pose.
+* * Record current robot position including joints - this is called a pose.
 
-** Instruct all cameras to begin recording.
+* * Instruct all cameras to begin recording.
 
-** Select new location to move to - this is called a goal. Only one axis will be tweaked at a time. The number of repetitions per axis is in AXIS_REPS. The amount of change in each value is in SWEEP_RANGE.
+* * Select new location to move to - this is called a goal. Only one axis will be tweaked at a time. The number of repetitions per axis is in AXIS_REPS. The amount of change in each value is in SWEEP_RANGE.
 
-** Move to goal.
+* * Move to goal.
 
-** Record new pose.
+* * Record new pose.
 
-** Stop all cameras
+* * Stop all cameras
 
-** Log to pose to `[datadir]/[N]-[timestamp]-joints.json`
+* * Log to pose to `[datadir]/[N]-[timestamp]-joints.json`
 
-** Receive videos from all cameras and store each to `[datadir]/[N]-[timestamp]-[camera_name].h264`
+* * Receive videos from all cameras and store each to `[datadir]/[N]-[timestamp]-[camera_name].h264`
 
-** Return to original pose
+* * Return to original pose
 
 This should be useful for training, but I'm not there yet.
 
