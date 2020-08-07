@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: "python:3.6"
+    steps:
+      - checkout
+#       - run: apt update
+#       - run: apt install gettext-base
+#       - run: envsubst < setup.py > setup.py
+      - run: cat setup.py
+      - run: python setup.py sdist bdist_wheel && ls -l
+      - run: pip install twine
+      - run: twine upload dist/*
+    branches:
+      only: master
