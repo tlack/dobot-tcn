@@ -7,7 +7,7 @@ AXIS_REPS=2
 
 SWEEP_RANGE=40
 
-TOOL="joint-recording-one-axis"
+TOOL="jointrecording"
 DATA="data"
 
 import base64
