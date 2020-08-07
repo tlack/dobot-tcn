@@ -34,6 +34,11 @@ def main(cam):
     def start():
             global curFn, startTime
 
+            try:
+                cam.stop_recording()
+            except:
+                pass
+
             fn = request.args.get('fname')
             if not fn: 
                     return jsonify({'err': 'no fname'})
