@@ -1,15 +1,27 @@
 # dobot-tcn
 
-This is an attempt to utilize a time contrastive network
-to control a Dobot Magician robotic arm
+This is an attempt to utilize a time contrastive network to control a robotic arm.
+
+It supports the Dobot Magician and custom Makeblock Auriga / MS-12a configurations.
+
+This experiment is an attempt to replicate
+[Time Contrastive Networks: Self-Supervised Learning from Multiview Observation](https://sermanet.github.io/tcn/).
+
 
 ## status
 
-Building data set: Moves Dobot randomly while recording from two perspectives
+Kinda works. Jiggles your robot arm around while taking videos from multiple angles.
+
+Next up: training.
+
+Finally: reinforcement learning and application with PPO.
 
 ## prereq
 
-1. Dobot Magician
+1. A robotic arm. We support: 
+   - Dobot Magician
+	 - Makeblock Auriga with MS-12a Smart Sensors
+	 - Dynamixel XL (soon!)
 2. PiCamera x2 or more
 3. Python3.7+
 4. ffmpeg
@@ -40,6 +52,31 @@ Retrieve contents of video. Returned as Base64 string inside JSON structure:
 ```{"fn": "test.h264", "data": "...enormous string...", "size": 123123}```
 
 Run one copy of this script on each PiCamera node.
+
+### pydobot/
+
+This is my fork of the regular Pydobot code.
+
+### auriga/
+
+Support for Makeblock Auriga motor controller board with ATmel Mega2650, along with
+their MS-12a Smart Servos.
+
+#### auriga/Makeblock-Auriga-SmartServoMS12a-FIRMWARE
+
+This is an Arduino sketch that provides new firmware for your Auriga. This new firmware
+is a highly optimized ASCII protocol that allows you to control your bot over serial
+from your Raspberry Pi. 
+
+Note that Makeblock provides some connectivity with their standard firmware but the
+protocol isn't well documented.
+
+**Load this on your Auriga first** before continuing to the Python stage.
+
+#### auriga/Auriga.py
+
+This is a PySerial-based wrapper that speaks to the firmware and provides a
+super simple class wrapper.
 
 ### jointrecording.py
 
