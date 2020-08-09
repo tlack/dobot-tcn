@@ -11,6 +11,7 @@ AXIS_REPS=10      # how many movements per joint before choosing another?
 SWEEP_RANGE=40    # XXX we should make these relative!
 
 USE_REVIEW_TOOL=1
+REVIEW_FREQ=0.2   # how often should we open review tool after shooting? range 0-1
 REVIEW_TOOL_COMMAND="vlc --play-and-exit {}"
 PRE_DELAY=1
 POST_DELAY=1
@@ -188,7 +189,8 @@ def init():
             vf = os.path.join(path, f"{test_slug}-{cam}.h264")
             open(vf, 'wb').write(data)
             if USE_REVIEW_TOOL:
-                os.system(REVIEW_TOOL_COMMAND.format(vf))
+                if i == 0 or random.random() > REVIEW_FREQ:
+                    os.system(REVIEW_TOOL_COMMAND.format(vf))
 
         bot.move_wait(rs1)
         time.sleep(EXAMPLE_DELAY)
