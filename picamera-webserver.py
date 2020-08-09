@@ -1,4 +1,4 @@
-VID_DIR="data/remote-camera-webserver/"
+VID_DIR="data/picamera-webserver/"
 CAMERA_OPTIONS={"sensor_mode": 4, "resolution": (640,480), "framerate":30}
 
 import base64

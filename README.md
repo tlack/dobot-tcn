@@ -16,13 +16,13 @@ Building data set: Moves Dobot randomly while recording from two perspectives
 
 ## what's here
 
-### remote_picamera_webserver.py
+### picamera_webserver.py
 
 This is a simple Flask web app to interact with a Raspberry Pi PiCamera. 
 
 Edit settings on first line and run.
 
-Stores videos in `data/remote-camera-webserver`.
+Stores videos in `data/picamera-webserver`.
 
 The API presents these endpoints:
 
