@@ -3,12 +3,20 @@ W = 224
 H = 224
 CHAN = 3 #rgb
 BATCH = 8
-EPOCHS = 2
-FC = [W * 1.5, H * 1.5, W+H]
+EPOCHS = 25
+DROPOUT = 0.25
+FC = [W * 2, H * 2, W + H]
 
 import json
 
+import cv2
+from keras.layers import Dense, Activation, Flatten, Dropout
+from keras.models import Sequential, Model
+from keras.preprocessing.image import ImageDataGenerator
+from keras.optimizers import SGD, Adam
+from keras.callbacks import ModelCheckpoint
 from keras.applications.resnet50 import ResNet50, preprocess_input
+import numpy
 
 from util import emit, noemit
 
@@ -25,14 +33,16 @@ def prep():
         j_vals = [yy[i] for yy in d['y']]
         m = numpy.max(j_vals)
         emit(m, ('max', i))
-        maxes.push(m)
+        maxes.append(m)
 
     for x, y in zip(d['x'], d['y']):
-        x = cv2.resize(cv2.imread(x), (W, H)) / 255.0
-        for i in y:
-            y[i] = y[i] / maxes[i]
-        X.push(x)
-        Y.push(y)
+        img = cv2.imread(x)
+        if img is not None:
+            x = cv2.resize(img, (W, H)) / 255.0
+            for i, yy in enumerate(y):
+                y[i] = y[i] / maxes[i]
+            X.append(x)
+            Y.append(y)
 
     emit(len(X), 'len X')
     emit(len(Y), 'len Y')
@@ -42,15 +52,15 @@ def prep():
     Xn = numpy.array(X)
     Yn = numpy.array(Y)
 
-    Xs = X.shape()
-    Ys = Y.shape()
+    Xs = Xn.shape
+    Ys = Yn.shape
     emit(Xs, 'shape X')
     emit(Ys, 'shape X')
 
     assert Xs[0] == len(X)
     assert Xs[1] == H
     assert Xs[2] == W
-    assert Xs[3] == DEPTH
+    assert Xs[3] == CHAN
     assert Ys[0] == len(Y)
     assert Ys[1] == n_joints
 
@@ -59,7 +69,7 @@ def prep():
 def model(n_joints):
     base = ResNet50(weights='imagenet',
         include_top=False,
-        input_shape=(HEIGHT, WIDTH, CHAN))
+        input_shape=(H, W, CHAN))
     for layer in base.layers:
         layer.trainable = False
     x = Flatten()(base.output)
@@ -67,16 +77,20 @@ def model(n_joints):
         x = Dense(l, activation='relu')(x) # XXX relu?
         x = Dropout(DROPOUT)(x)
     y = Dense(n_joints, activation='linear')(x) # XXX linear?
-    model = Model(inputs=base_model.input, outputs=y)
+    model = Model(inputs=base.input, outputs=y)
     opt = Adam(lr=1e-3, decay=1e-3 / 200)
     model.compile(loss="mean_absolute_percentage_error", optimizer=opt)
     return model
 
 def main():
-
     [y_size, Xn, Yn, Xs, Ys] = prep()
     net = model(y_size)
-    breakpoint()
-    o = model.fit(Xn, Yn, epochs=EPOCHS, batch_size=BATCH)
+    o = net.fit(Xn, Yn, epochs=EPOCHS, batch_size=BATCH)
     emit(o, 'model.fit')
+    last_loss = o.history['loss'][-1]
+    model_fname = f'data/train-joint-regressor-{EPOCHS}-{timestamp()}-{last_loss}.h5'
+    emit(model_fname, 'output file')
+    o.model.save(model_fname)
+
+main()
 

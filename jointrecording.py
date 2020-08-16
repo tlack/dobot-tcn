@@ -36,6 +36,8 @@ import time
 
 import requests
 
+from util import timestamp
+
 class BotAdapter:
     _pose = {}
     def start(self):
@@ -95,9 +97,6 @@ if ROBOT == "auriga":
     bot = AurigaAdapter()
 if ROBOT == "dobot":
     bot = DobotAdapter()
-
-def timestamp():
-    return datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d%H%M%S')
 
 _lucky_axis = "x"
 
