@@ -3,6 +3,7 @@ W = 224
 H = 224
 CHAN = 3 #rgb
 BATCH = 8
+EPOCHS = 2
 FC = [W * 1.5, H * 1.5, W+H]
 
 import json
@@ -20,8 +21,9 @@ def prep():
     emit(n_joints, 'n_joints')
 
     maxes = []
-    for i in range(len(d['y'][0])):
-        m = numpy.max(d['y'][i])
+    for i in range(n_joints):
+        j_vals = [yy[i] for yy in d['y']]
+        m = numpy.max(j_vals)
         emit(m, ('max', i))
         maxes.push(m)
 
@@ -75,6 +77,6 @@ def main():
     [y_size, Xn, Yn, Xs, Ys] = prep()
     net = model(y_size)
     breakpoint()
-    o = model.fit(Xn, Yn, epochs=2, batch_size=BATCH)
+    o = model.fit(Xn, Yn, epochs=EPOCHS, batch_size=BATCH)
     emit(o, 'model.fit')
 

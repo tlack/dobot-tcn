@@ -3,12 +3,12 @@ CAMERAS = {'rpi':'http://localhost:8585/', 'rpzw':'http://192.168.1.249:8585/'}
 
 # Configure the bot environment
 ROBOT="auriga"           # "auriga" or "dobot" for now
-PORT="/dev/ttyUSB3"
+PORT="/dev/ttyUSB0"
 
 # Configure this experiment:
 N_EXAMPLES=50
-AXIS_REPS=10      # how many movements per joint before choosing another?
-SWEEP_RANGE=40    # XXX we should make these relative!
+AXIS_REPS=2      # how many movements per joint before choosing another?
+SWEEP_RANGE=90    # XXX we should make these relative!
 
 USE_REVIEW_TOOL=1
 REVIEW_FREQ=0.2   # how often should we open review tool after shooting? range 0-1
@@ -17,8 +17,9 @@ PRE_DELAY=1
 POST_DELAY=1
 EXAMPLE_DELAY=0.5 # pause to resetup
 
+# folders
 TOOL="jointrecording"
-DATA="data"
+DATA="data/joint-videos"
 
 if ROBOT == "auriga":
     from auriga import Auriga
@@ -148,17 +149,18 @@ def promptexperiment():
 
 def init():
     print(f'camera sources: {CAMERAS}')
-    exp = promptexperiment()
-    path = os.path.join(DATA, TOOL, f'{exp}-{timestamp()}')
-    os.makedirs(path, exist_ok=True)
-    print(f'path: {path}')
-
+    
     dev = bot.start()
     pose = bot.pose()
     print(f'initial pose: {pose}')
     if len(pose.keys()) == 0 or len(bot.movable_joints()) == 0:
         print(f'no joints active! cannot continue.')
         sys.exit(1)
+
+    exp = promptexperiment()
+    path = os.path.join(DATA, TOOL, f'{exp}-{timestamp()}')
+    os.makedirs(path, exist_ok=True)
+    print(f'path: {path}')
 
     for i in range(N_EXAMPLES):
         rs1 = bot.pose()
