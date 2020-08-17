@@ -1,5 +1,6 @@
 DATASET_FILE='data/training-frames.json'
-MODEL_OUTPUT_FNAME = 'data/train-joint-regressor-{FC_TXT}-{EPOCHS}-{start_time}-{last_loss}.h5'
+MODEL_OUTPUT_FNAME = 'data/trained-models/jointregressor-{FC_TXT}-{EPOCHS}-{start_time}-{last_loss}.h5'
+JOINT_MAX_FNAME = 'data/trained-models/jointmax.json'
 W = 224
 H = 224
 CHAN = 3 #rgb
@@ -38,6 +39,9 @@ def prep():
         emit(m, ('max', i))
         maxes.append(m)
 
+    open(JOINT_MAX_FNAME, 'w').write(json.dumps(maxes))
+    emit(JOINT_MAX_FNAME, 'saved joint maxes / scaling values')
+
     for x, y in zip(d['x'], d['y']):
         img = cv2.imread(x)
         if img is not None:
@@ -67,7 +71,7 @@ def prep():
     assert Ys[0] == len(Y)
     assert Ys[1] == n_joints
 
-    return [n_joints, Xn, Yn, Xs, Ys]
+    return [maxes, n_joints, Xn, Yn, Xs, Ys]
 
 def model(n_joints):
     base = ResNet50(weights='imagenet',
@@ -92,6 +96,7 @@ def main():
     emit(model_fname, 'output file')
 
     [y_size, Xn, Yn, Xs, Ys] = prep()
+
     X_tr, X_te, Y_tr, Y_te = train_test_split(Xn, Yn, test_size=0.15)
 
     emit((X_tr.shape, X_te.shape), 'tr/te')
