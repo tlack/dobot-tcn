@@ -1,11 +1,13 @@
 DATASET_FILE='data/training-frames.json'
+MODEL_OUTPUT_FNAME = 'data/train-joint-regressor-{FC_TXT}-{EPOCHS}-{start_time}-{last_loss}.h5'
 W = 224
 H = 224
 CHAN = 3 #rgb
-BATCH = 8
-EPOCHS = 25
-DROPOUT = 0.25
-FC = [W * 2, H * 2, W + H]
+BATCH = 16
+EPOCHS = 2
+DROPOUT = 0.1
+FC = [W * 2, H, H // 4]
+FC_TXT = ','.join([str(x) for x in FC])
 
 import json
 
@@ -16,9 +18,10 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD, Adam
 from keras.callbacks import ModelCheckpoint
 from keras.applications.resnet50 import ResNet50, preprocess_input
+from sklearn.model_selection import train_test_split
 import numpy
 
-from util import emit, noemit
+from util import emit, noemit, timestamp
 
 def prep():
     d = json.loads(open(DATASET_FILE).read())
@@ -83,13 +86,23 @@ def model(n_joints):
     return model
 
 def main():
-    [y_size, Xn, Yn, Xs, Ys] = prep()
-    net = model(y_size)
-    o = net.fit(Xn, Yn, epochs=EPOCHS, batch_size=BATCH)
-    emit(o, 'model.fit')
-    last_loss = o.history['loss'][-1]
-    model_fname = f'data/train-joint-regressor-{EPOCHS}-{timestamp()}-{last_loss}.h5'
+    start_time = timestamp()
+    last_loss = '(loss)';
+    model_fname = MODEL_OUTPUT_FNAME.format_map({**globals(), **locals()})
     emit(model_fname, 'output file')
+
+    [y_size, Xn, Yn, Xs, Ys] = prep()
+    X_tr, X_te, Y_tr, Y_te = train_test_split(Xn, Yn, test_size=0.15)
+
+    emit((X_tr.shape, X_te.shape), 'tr/te')
+
+    net = model(y_size)
+
+    o = net.fit(X_tr, Y_tr, epochs=EPOCHS, validation_data=(X_te, Y_te), batch_size=BATCH)
+    emit(o, 'model.fit')
+
+    last_loss = o.history['loss'][-1]
+    model_fname = MODEL_OUTPUT_FNAME.format_map({**globals(), **locals()})
     o.model.save(model_fname)
 
 main()
