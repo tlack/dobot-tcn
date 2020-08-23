@@ -19,8 +19,11 @@ except:
     def beep():
         print('starting video..')
 
-def make_fn(fn):
-    return os.path.join(VID_DIR, fn+'.h264')
+def make_fn(fn, video=True):
+    if video:
+        return os.path.join(VID_DIR, fn+'.h264')
+    else:
+        return os.path.join(VID_DIR, fn+'.jpg')
 
 def main(cam):
     app = Flask(__name__)
@@ -29,6 +32,16 @@ def main(cam):
     def index():
             vids = os.listdir(VID_DIR)
             return jsonify({'vids': vids, 'n': len(vids)})
+
+    @app.route('/pic')
+    def pic():
+            fn = make_fn('still', video=False)
+            print('saving pic to', fn)
+            cam.capture(fn)
+            data = open(fn, 'rb').read()
+            bdata = base64.b64encode(data)
+            sz = os.path.getsize(fn)
+            return jsonify({'fn': fn, 'data': bdata, 'size': sz})
 
     @app.route('/start')
     def start():
