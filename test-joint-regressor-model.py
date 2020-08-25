@@ -4,7 +4,7 @@ VID_DIR="data/joint-videos/"
 FRAMES_DIR="data/test-trained-model-frames/"
 
 MIN_FRAMES = 50
-OFS = [10, 20, -20, -10]
+OFS = [1, 10, -10, -1]
 
 W = 224
 H = 224
@@ -76,7 +76,7 @@ def extract_frames(vid):
     r.sort(key=lambda x: int(x.split("-")[-1].replace('.png','')))
     emit(r, 'frames')
     if len(r) < MIN_FRAMES:
-        return [None, None]
+        return None
     keepers = {x: r[x] for x in OFS}
     for x in r:
         if not x in keepers.values():
@@ -106,21 +106,23 @@ def test_frame(model, ofs, frame_fname, joints, maxes):
         print(f'range from: {pretty(from_)}')
         print(f'range to  : {pretty(to_)}')
         print(f'prediction: {pretty(pred)}')
-        breakpoint()
 
 def test_video(model, vid_fname, joints, maxes):
     frames = extract_frames(vid_fname)
+    if not frames:
+        return
     print('got frames', frames)
     for ofs, fn in frames.items():
         test_frame(model, ofs, fn, joints, maxes)
+    breakpoint()
 
 def pick_model():
     models = glob.glob(path.join(MODEL_DIR, "*.h5"))
     for i, m in enumerate(models):
         sz = stat(m).st_size // 1024 // 1024
         print(f'#{i}: {m} ({sz}mb)')
-    # mi = int(input('Enter model # to load: '))
-    mi = 2
+    mi = int(input('Enter model # to load: '))
+    # mi = 2
     model_fname = models[mi]
     print(f'Loading #{mi} {model_fname}..')
     model = keras.models.load_model(model_fname)
