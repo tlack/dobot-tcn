@@ -258,6 +258,29 @@ class Dobot:
         msg.ctrl = ControlValues.ONE
         return self._send_command(msg)
 
+    def _get_eio_level(self, address):
+        msg = Message()
+        msg.id = CommunicationProtocolIDs.SET_GET_EIO
+        msg.ctrl = ControlValues.ZERO
+        msg.params = bytearray([])
+        msg.params.extend(bytearray([address]))
+        return self._send_command(msg)
+
+    def _set_eio_level(self, address, level):
+        msg = Message()
+        msg.id = CommunicationProtocolIDs.SET_GET_EIO
+        msg.ctrl = ControlValues.ONE
+        msg.params = bytearray([])
+        msg.params.extend(bytearray([address]))
+        msg.params.extend(bytearray([level]))
+        return self._send_command(msg)
+
+    def get_eio(self, addr):
+        return self._get_eio_level(addr)
+
+    def set_eio(self, addr, val):
+        return self._set_eio_level(addr, val)
+
     def close(self):
         self._on = False
         self.lock.acquire()
