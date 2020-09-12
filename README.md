@@ -10,11 +10,22 @@ This experiment is an attempt to replicate
 
 ## status
 
-Kinda works. Jiggles your robot arm around while taking videos from multiple angles.
+DATA: 
+Generalized data recording subsystem works. There are two different variants, one of which records a video, the other just still frames.
+Use the stills, bro. See [my other repo](https://github.com/tlack/dobot-tcn-training-data/) for samples of training data.
 
-Next up: training.
+TRAINING: 
+There are two failed direct image regression (picture of robot -> joint positions of robot) attempts here. Others may
+have luck with that approach. 
 
-Finally: reinforcement learning and application with PPO.
+I seem to be having better luck with a contrastive model, a hacky manual version of which can be seen here:
+[on Google Colab](https://colab.research.google.com/drive/18axcd2EtWSp9H5PnxqJe6arKzTMDBgNC?usp=sharing) or [YT](https://www.youtube.com/watch?v=f2J2HG72fd8). Needs a lot of work.
+
+IMITATION:
+The last step is to use this trained model and a system like [PPO](https://openai.com/blog/openai-baselines-ppo/) to 
+actually control a robot with a given video, or, the horror, a live stream. 
+
+This part hasn't been started.
 
 ## prereq
 
