@@ -21,10 +21,6 @@ EXAMPLE_DELAY=0.5 # pause to resetup
 TOOL="jointrecording"
 DATA="data/joint-videos"
 
-if ROBOT == "auriga":
-    from auriga import Auriga
-if ROBOT == "dobot":
-    from pydobot import pydobot
 
 import base64
 import datetime
@@ -36,62 +32,8 @@ import time
 
 import requests
 
+from botadapter import AurigaAdapter, DobotAdapter
 from util import timestamp
-
-class BotAdapter:
-    _pose = {}
-    def start(self):
-        pass
-    def pose(self):
-        pass
-    def home(self):
-        pass
-    def move_wait(self, joints):
-        pass
-    def movable_joints(self):
-        pass
-
-class DobotAdapter(BotAdapter):
-    def start(self):
-        self.device = pydobot.Dobot(port=PORT, verbose=True)
-        self._pose = self._getpose()
-        self._home = self._pose;
-    def _getpose(self):
-        # TODO gripper
-        (x, y, z, r, j1, j2, j3, j4) = self.device.pose()
-        return {'x': x, 'y': y, 'z': z, 'r':j1, '1': j1, '2':j2, '3':j3, '4':j4};
-    def pose(self):
-        self._pose = _getpose()
-        return self._pose
-    def home(self):
-        self.move_wait(self._home)
-    def move_wait(self, joints):
-        self.device.move_to(joints['x'], joints['y'], joints['z'], joints['r'], wait=True)
-    def movable_joints(self):
-        return ['x', 'y', 'z', 'r']
-    def close(self):
-        self.device.close()
-
-class AurigaAdapter(BotAdapter):
-    def start(self):
-        self.device = Auriga.Auriga(PORT)
-        self._pose = self._getpose()
-        self._home = self._pose
-    def _getpose(self):
-        return self.device.pose()
-    def close(self):
-        self.device.close()
-    def pose(self):
-        self._pose = self._getpose()
-        return self._pose
-    def home(self):
-        self.move_wait(self._home)
-    def move_wait(self, joints):
-        goal = {x: joints[x] for x in self._pose.keys()}
-        for k, v in goal.items():
-            self.device.move(k, v) # XXX does this wait?
-    def movable_joints(self):
-        return list(self._pose.keys())
 
 if ROBOT == "auriga":
     bot = AurigaAdapter()
@@ -149,7 +91,7 @@ def promptexperiment():
 def init():
     print(f'camera sources: {CAMERAS}')
     
-    dev = bot.start()
+    dev = bot.start(PORT)
     pose = bot.pose()
     print(f'initial pose: {pose}')
     if len(pose.keys()) == 0 or len(bot.movable_joints()) == 0:

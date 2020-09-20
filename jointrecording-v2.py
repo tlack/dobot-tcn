@@ -32,9 +32,8 @@ import time
 
 import requests
 
-from util import timestamp
-
 from botadapter import AurigaAdapter, DobotAdapter
+from util import timestamp
 
 if ROBOT == "auriga":
     bot = AurigaAdapter()
