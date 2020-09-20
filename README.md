@@ -30,9 +30,9 @@ This part hasn't been started.
 ## prereq
 
 1. A robotic arm. We support: 
-   - Dobot Magician
-	 - Makeblock Auriga with MS-12a Smart Sensors
-	 - Dynamixel XL (soon!)
+	- Dobot Magician
+   	- Makeblock Auriga with MS-12a Smart Sensors
+	- Dynamixel XL (soon!)
 2. PiCamera x2 or more
 3. Python3.7+
 4. ffmpeg
