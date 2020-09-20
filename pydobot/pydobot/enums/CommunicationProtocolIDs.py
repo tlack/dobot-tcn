@@ -32,3 +32,6 @@ class CommunicationProtocolIDs(Enum):
     SET_QUEUED_CMD_STOP_EXEC = 241
     SET_QUEUED_CMD_CLEAR = 245
     GET_QUEUED_CMD_CURRENT_INDEX = 246
+
+    SET_GET_EIO = 131
+
